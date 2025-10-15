@@ -3,6 +3,7 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { Server } from 'http';
+import type { Application } from 'express';
 
 /**
  * Bootstrap the NestJS application
@@ -16,7 +17,7 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   // Trust proxy headers (for IP detection behind reverse proxy/load balancer)
-  const expressApp = app.getHttpAdapter().getInstance();
+  const expressApp = app.getHttpAdapter().getInstance() as Application;
   expressApp.set('trust proxy', true);
 
   // Set global API prefix
