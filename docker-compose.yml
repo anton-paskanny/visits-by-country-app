@@ -1,0 +1,80 @@
+services:
+  # Redis service
+  redis:
+    image: redis:7-alpine
+    container_name: visits-redis
+    ports:
+      - "${REDIS_HOST_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 400mb
+      --maxmemory-policy allkeys-lru
+      --tcp-backlog 511
+      --timeout 0
+      --tcp-keepalive 300
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - visits-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "${REDIS_CPU_LIMIT:-1.0}"
+          memory: "${REDIS_MEMORY_LIMIT:-512M}"
+        reservations:
+          cpus: "${REDIS_CPU_RESERVATION:-0.5}"
+          memory: "${REDIS_MEMORY_RESERVATION:-256M}"
+
+  # API service
+  api:
+    build:
+      context: .
+      target: production
+      dockerfile: Dockerfile
+    container_name: visits-api
+    ports:
+      - "${API_HOST_PORT:-3000}:3000"
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - visits-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "${API_CPU_LIMIT:-2.0}"
+          memory: "${API_MEMORY_LIMIT:-1G}"
+        reservations:
+          cpus: "${API_CPU_RESERVATION:-1.0}"
+          memory: "${API_MEMORY_RESERVATION:-512M}"
+
+networks:
+  visits-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
