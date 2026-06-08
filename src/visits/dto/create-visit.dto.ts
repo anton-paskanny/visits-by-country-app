@@ -13,7 +13,7 @@ export class CreateVisitDto {
       'Country code must be a 2-letter ISO 3166-1 alpha-2 code (e.g., us, ru, it)',
   })
   @Transform(({ value }) =>
-    typeof value === 'string' ? value.toLowerCase().trim() : '',
+    typeof value === 'string' ? value.toLowerCase().trim() : value,
   )
   country?: string;
 }

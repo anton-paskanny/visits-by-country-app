@@ -69,26 +69,6 @@ export class VisitsService {
   }
 
   /**
-   * Get visit count for a specific country
-   *
-   * @param countryCode - ISO 3166-1 alpha-2 country code
-   * @returns Visit count (0 if no visits recorded)
-   * @throws ServiceUnavailableException if Redis operation fails
-   */
-  async getCountryStats(countryCode: string): Promise<number> {
-    try {
-      const client = this.redisService.getClient();
-      const count = await client.hGet(this.VISITS_KEY, countryCode);
-      return count ? parseInt(count, 10) : 0;
-    } catch (error) {
-      this.logger.error(`Error fetching stats for ${countryCode}:`, error);
-      throw new ServiceUnavailableException(
-        'Failed to retrieve country statistics',
-      );
-    }
-  }
-
-  /**
    * Reset all visit statistics
    * Useful for testing and maintenance
    *

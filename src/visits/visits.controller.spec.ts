@@ -22,7 +22,6 @@ describe('VisitsController', () => {
     };
 
     const mockGeoIpService = {
-      extractIp: jest.fn(),
       getCountryFromIp: jest.fn(),
     };
 

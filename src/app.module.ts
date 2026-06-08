@@ -19,7 +19,7 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
       load: [configuration],
       envFilePath: '.env',
     }),
-    // Rate limiting - 1500 requests per minute per IP (supports 1000/min with buffer)
+    // Rate limiting - 1500 requests per minute per IP
     ThrottlerModule.forRoot([
       {
         ttl: 60000, // 60 seconds

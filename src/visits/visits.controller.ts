@@ -48,12 +48,9 @@ export class VisitsController {
     let country = createVisitDto.country;
 
     // If country not provided in body, detect from IP
+    // trust proxy is enabled in main.ts so req.ip already contains the real client IP
     if (!country) {
-      const ip = this.geoIpService.extractIp(
-        req.headers as Record<string, string | string[]>,
-        req.ip || req.socket.remoteAddress || '',
-      );
-
+      const ip = req.ip || req.socket.remoteAddress || '';
       const detectedCountry = this.geoIpService.getCountryFromIp(ip);
 
       if (!detectedCountry) {

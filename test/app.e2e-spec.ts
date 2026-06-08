@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { RedisService } from '../src/redis/redis.service';
+import { VisitsService } from '../src/visits/visits.service';
 
 interface HealthResponse {
   status: string;
@@ -26,7 +26,7 @@ interface ErrorResponse {
 
 describe('Visits API (e2e)', () => {
   let app: INestApplication;
-  let redisService: RedisService;
+  let visitsService: VisitsService;
   let httpServer: any;
 
   beforeAll(async () => {
@@ -36,7 +36,8 @@ describe('Visits API (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
 
-    // Apply same validation pipe as in main.ts
+    // Mirror main.ts setup
+    app.setGlobalPrefix('api');
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -47,7 +48,7 @@ describe('Visits API (e2e)', () => {
 
     await app.init();
 
-    redisService = app.get<RedisService>(RedisService);
+    visitsService = app.get<VisitsService>(VisitsService);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     httpServer = app.getHttpServer();
   });
@@ -57,9 +58,7 @@ describe('Visits API (e2e)', () => {
   });
 
   beforeEach(async () => {
-    // Reset statistics before each test
-    const client = redisService.getClient();
-    await client.del('visits:by_country');
+    await visitsService.resetStats();
   });
 
   describe('/api/health (GET)', () => {
@@ -134,8 +133,16 @@ describe('Visits API (e2e)', () => {
         .expect(400);
     });
 
-    it('should reject missing country code', () => {
-      return request(httpServer).post('/api/visits').send({}).expect(400);
+    it('should detect country from IP when no country provided', () => {
+      return request(httpServer)
+        .post('/api/visits')
+        .send({})
+        .expect(200)
+        .expect((res) => {
+          const body = res.body as VisitResponse;
+          expect(body.country).toBe('us'); // localhost maps to 'us'
+          expect(body.count).toBeGreaterThan(0);
+        });
     });
 
     it('should reject non-string country code', () => {

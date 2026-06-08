@@ -130,32 +130,6 @@ describe('VisitsService', () => {
     });
   });
 
-  describe('getCountryStats', () => {
-    it('should return count for existing country', async () => {
-      mockRedisClient.hGet.mockResolvedValue('42');
-
-      const result = await service.getCountryStats('us');
-
-      expect(result).toBe(42);
-    });
-
-    it('should return 0 for non-existing country', async () => {
-      mockRedisClient.hGet.mockResolvedValue(null);
-
-      const result = await service.getCountryStats('xx');
-
-      expect(result).toBe(0);
-    });
-
-    it('should throw ServiceUnavailableException on Redis error', async () => {
-      mockRedisClient.hGet.mockRejectedValue(new Error('Redis error'));
-
-      await expect(service.getCountryStats('us')).rejects.toThrow(
-        ServiceUnavailableException,
-      );
-    });
-  });
-
   describe('resetStats', () => {
     it('should reset all statistics', async () => {
       mockRedisClient.del.mockResolvedValue(1);
