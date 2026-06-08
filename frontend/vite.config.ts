@@ -13,6 +13,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           axios: ['axios'],
+          recharts: ['recharts'],
         },
       },
     },

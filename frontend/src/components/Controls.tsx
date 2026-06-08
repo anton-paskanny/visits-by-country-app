@@ -25,7 +25,7 @@ export default function Controls({
       </button>
       <button
         onClick={onSimulateVisit}
-        disabled={loading || isRecording}
+        disabled={isRecording}
         className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
       >
         {isRecording ? 'Recording...' : 'Simulate Visit'}

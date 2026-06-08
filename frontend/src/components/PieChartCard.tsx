@@ -14,7 +14,7 @@ export default function PieChartCard({ stats }: PieChartCardProps) {
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
-              data={stats}
+              data={stats as unknown as Array<Record<string, unknown>>}
               dataKey="visits"
               nameKey="country"
               cx="50%"
@@ -22,9 +22,9 @@ export default function PieChartCard({ stats }: PieChartCardProps) {
               outerRadius={100}
               label
             >
-              {stats.map((_, index) => (
+              {stats.map((item, index) => (
                 <Cell
-                  key={`cell-${index}`}
+                  key={item.country}
                   fill={COLORS[index % COLORS.length]}
                 />
               ))}

@@ -197,7 +197,7 @@ frontend/
 
 ### Multi-stage Dockerfile
 
-1. **Build Stage** (`node:18-alpine`)
+1. **Build Stage** (`node:20-alpine`)
    - Install dependencies with `npm ci`
    - Build with Vite (outputs to `/app/dist`)
    - Injects `VITE_API_URL` at build time
@@ -206,11 +206,10 @@ frontend/
    - Copies built static assets to `/usr/share/nginx/html`
    - Configures Nginx on port 3000
    - Includes healthcheck endpoint
-   - Runs as non-root user
 
 ### Build Optimizations
 
-- **Code Splitting**: Vendor chunk (React + React DOM) and Axios chunk
+- **Code Splitting**: Vendor chunk (React + React DOM), Axios chunk, and Recharts chunk
 - **Minification**: ESBuild minifier for fast builds
 - **No Source Maps**: Disabled for production
 - **Tree Shaking**: Removes unused code automatically

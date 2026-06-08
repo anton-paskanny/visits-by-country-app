@@ -28,9 +28,9 @@ export default function StatsTable({ stats, totalVisits }: StatsTableProps) {
               </tr>
             </thead>
             <tbody>
-              {stats.map((item, idx) => (
+              {stats.map((item) => (
                 <tr
-                  key={idx}
+                  key={item.country}
                   className="border-b border-gray-100 hover:bg-gray-50"
                 >
                   <td className="py-3 px-4 font-medium text-gray-800">
